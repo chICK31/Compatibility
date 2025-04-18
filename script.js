@@ -63,24 +63,24 @@ const temples = {
   }
   
   function checkCompatibility() {
-    const mbtiA = document.getElementById('mbtiA').value;
+    const typeA = document.getElementById('typeA').value;
     const octagramA = document.getElementById('octagramA').value;
     const genderA = document.getElementById('genderA').value;
   
-    const mbtiB = document.getElementById('mbtiB').value;
+    const typeB = document.getElementById('typeB').value;
     const octagramB = document.getElementById('octagramB').value;
     const genderB = document.getElementById('genderB').value;
   
-    if (!mbtiA || !mbtiB || !octagramA || !octagramB || !genderA || !genderB) {
+    if (!typeA || !typeB || !octagramA || !octagramB || !genderA || !genderB) {
       document.getElementById('result').textContent = "Please fill out all selections.";
       return;
     }
   
-    const relCode = getRelationshipCode(mbtiA, mbtiB);
+    const relCode = getRelationshipCode(typeA, typeB);
     let score = getRelationshipScore(relCode);
   
-    const templeBonus = getTempleBonus(getTemple(mbtiA), getTemple(mbtiB), relCode);
-    const quadraBonus = getQuadraBonus(getQuadra(mbtiA), getQuadra(mbtiB));
+    const templeBonus = getTempleBonus(getTemple(typeA), getTemple(typeB), relCode);
+    const quadraBonus = getQuadraBonus(getQuadra(typeA), getQuadra(typeB));
     const octaTypeA = getOctagramType(octagramA);
     const octaTypeB = getOctagramType(octagramB);
     let octaBonus = getOctagramBonus(octaTypeA, octaTypeB);
@@ -110,7 +110,12 @@ const temples = {
     if (octaTypeA !== octaTypeB) {
       romanticCompatibility -= 50;
     }
-    romanticCompatibility = Math.max(0, Math.min(romanticCompatibility, 100));
+    // Apply same-gender penalty to romantic compatibility
+    if (genderA === genderB) {
+        romanticCompatibility *= 0.6; // Reduce by 40%
+        romanticCompatibility = Math.max(0, romanticCompatibility); // Clamp again
+    }
+  
   
     // Final output
     document.getElementById('result').textContent =
